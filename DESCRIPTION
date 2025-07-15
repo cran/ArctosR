@@ -1,6 +1,6 @@
 Package: ArctosR
 Title: An Interface to the 'Arctos' Database
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Harlan", "Williams", email = "harlanrhwilliams@gmail.com", role = c("aut", "cre")),
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = "aut"),
@@ -26,11 +26,11 @@ Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-07-07 16:57:59 UTC; harla
+Packaged: 2025-07-15 01:07:28 UTC; harla
 Author: Harlan Williams [aut, cre],
   Marlon E. Cobos [aut],
   Jocelyn P. Colella [aut],
   Michelle S. Koo [aut],
   Vijay Barve [aut]
 Repository: CRAN
-Date/Publication: 2025-07-11 12:40:13 UTC
+Date/Publication: 2025-07-15 11:10:06 UTC

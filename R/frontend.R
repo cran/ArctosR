@@ -125,7 +125,7 @@ get_record_count <- function(..., api_key = NULL) {
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
@@ -191,6 +191,106 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 
 
 
+#' @title Check if the query object ends with a successful response
+#'
+#' @description
+#' Checks if a response failed as part of a query.
+#'
+#' @usage
+#' check_for_status(query)
+#'
+#' @examples
+#' library(ArctosR)
+#'
+#' # query with an invalid column name 'paarts'
+#' query <- get_records(
+#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'   columns = list("guid", "paarts", "partdetail")
+#' )
+#'
+#' check_for_status(query)
+#'
+#' @param query A query object to check the return status of
+#'
+#' @returns
+#' TRUE if the query succeeded, FALSE otherwise
+#'
+#' @export
+check_for_status <- function(query) {
+  return(query$last_response$was_success())
+}
+
+
+
+#' @title Get the last error message of a query object
+#'
+#' @description
+#' Returns the error string returned from Arctos if the last response in a
+#' query object returned a status code other than HTTP 200 for debugging
+#' purposes.
+#'
+#' @usage
+#' get_error_response(query)
+#'
+#' @examples
+#' library(ArctosR)
+#'
+#' # query with an invalid column name 'paarts'
+#' query <- get_records(
+#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'   columns = list("guid", "paarts", "partdetail")
+#' )
+#'
+#' get_error_response(query)
+#'
+#' @param query A query object to return the error string of
+#'
+#' @returns
+#' The error string of a failing response object, or "No error" if the query
+#' didn't fail
+#'
+#' @export
+get_error_response <- function(query) {
+  if (!check_for_status(query)) {
+    last_response <- query$last_response
+    return(last_response$content$Message)
+  } else {
+    return("No error")
+  }
+}
+
+
+
+#' @title Get the last URL used by a request in a query object
+#'
+#' @description
+#' Returns the last URL used by a request in a query object
+#'
+#' @usage
+#' get_last_response_url(query)
+#'
+#' @examples
+#' library(ArctosR)
+#'
+#' query <- get_records(
+#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'   columns = list("guid", "parts", "partdetail")
+#' )
+#'
+#' get_last_response_url(query)
+#'
+#' @param query A query object to return the URL for
+#'
+#' @returns
+#' The URL of the last performed request in a query object
+#'
+#' @export
+get_last_response_url <- function(query) {
+  return(query$last_response$metadata$url)
+}
+
+
+
 #' @title Expand information of columns in JSON format
 #'
 #' @description
@@ -203,14 +303,14 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
 #'
 #' # The partdetail column is a JSON list of parts and their attributes
 #' # This will convert the column to dataframes:
-#' expand_column(response, "partdetail")
+#' expand_column(query, "partdetail")
 #'
 #' @param query The query object with a JSON formatted column to be expanded.
 #' @param column_name (character) The name of the column to be expanded.
@@ -235,13 +335,13 @@ expand_column <- function(query, column_name) {
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
 #'
-#' # Grab the dataframe of records from the response
-#' df <- response_data(response)
+#' # Grab the dataframe of records from the query
+#' df <- response_data(query)
 #'
 #' @param query The query object to extract the data frame from.
 #'
@@ -267,13 +367,13 @@ response_data <- function(query) {
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
 #'
 #' # Save the data in a .RDS file
-#' save_response_rds(response, "wolves.RDS")
+#' save_response_rds(query, "wolves.RDS")
 #'
 #' \dontshow{
 #' unlink("wolves.RDS")
@@ -302,13 +402,13 @@ save_response_rds <- function(query, filename) {
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
 #'
 #' # Save the data in a .RDS file
-#' save_response_rds(response, "wolves.RDS")
+#' save_response_rds(query, "wolves.RDS")
 #'
 #' # Load the data from the .RDS just saved
 #' read_response_rds("wolves.RDS")
@@ -341,13 +441,13 @@ read_response_rds <- function(filename) {
 #' library(ArctosR)
 #'
 #' # Request to download all available data
-#' response <- get_records(
+#' query <- get_records(
 #'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
 #'   columns = list("guid", "parts", "partdetail")
 #' )
 #'
 #' # Save the response in a flat CSV with an additional metadata file in JSON
-#' save_response_csv(response, "msb-wolves.csv", with_metadata = TRUE)
+#' save_response_csv(query, "msb-wolves.csv", with_metadata = TRUE)
 #'
 #' \dontshow{
 #' unlink("msb-wolves.csv")

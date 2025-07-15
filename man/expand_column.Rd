@@ -22,13 +22,13 @@ object. Information is presented as nested data frames if needed.
 library(ArctosR)
 
 # Request to download all available data
-response <- get_records(
+query <- get_records(
   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
   columns = list("guid", "parts", "partdetail")
 )
 
 # The partdetail column is a JSON list of parts and their attributes
 # This will convert the column to dataframes:
-expand_column(response, "partdetail")
+expand_column(query, "partdetail")
 
 }

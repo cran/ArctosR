@@ -22,13 +22,13 @@ query and can be loaded at a later time.
 library(ArctosR)
 
 # Request to download all available data
-response <- get_records(
+query <- get_records(
   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
   columns = list("guid", "parts", "partdetail")
 )
 
 # Save the data in a .RDS file
-save_response_rds(response, "wolves.RDS")
+save_response_rds(query, "wolves.RDS")
 
 \dontshow{
 unlink("wolves.RDS")

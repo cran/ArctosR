@@ -224,8 +224,6 @@ test_that("re-expand cols after write", {
   df <- response_data(query)
   testthat::expect_s3_class(df$partdetail[[1]], "data.frame")
 
-
-
   old_wd <- getwd()
   on.exit(setwd(old_wd))
   tmp <- tempfile()
@@ -241,5 +239,5 @@ test_that("re-expand cols after write", {
   testthat::expect_s3_class(df$partdetail[[1]], "data.frame")
 
   # test that save_response_csv resets user's working directory
-  testthat::expect_equal(gsub("\\\\", "/", tmp), getwd())
+  testthat::expect_equal(basename(getwd()), basename(tmp))
 })

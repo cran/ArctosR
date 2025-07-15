@@ -33,13 +33,13 @@ CSVs that are named according to which record they belong.
 library(ArctosR)
 
 # Request to download all available data
-response <- get_records(
+query <- get_records(
   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
   columns = list("guid", "parts", "partdetail")
 )
 
 # Save the response in a flat CSV with an additional metadata file in JSON
-save_response_csv(response, "msb-wolves.csv", with_metadata = TRUE)
+save_response_csv(query, "msb-wolves.csv", with_metadata = TRUE)
 
 \dontshow{
 unlink("msb-wolves.csv")
