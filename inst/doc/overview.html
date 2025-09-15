@@ -346,6 +346,12 @@ save results in various formats. This vignette provides an overview of
 the basic usage of this package.</p>
 <div id="basics" class="section level2">
 <h2>Basics</h2>
+<div id="api-key" class="section level3">
+<h3>API key</h3>
+<p>In order to use most of the functions in ArctosR, you will have to
+request an API key from Arctos. See <a href="https://handbook.arctosdb.org/documentation/api.html">https://handbook.arctosdb.org/documentation/api.html</a>
+for instructions on how to do this.</p>
+</div>
 <div id="types-of-data-in-arctos" class="section level3">
 <h3>Types of data in Arctos</h3>
 <p>Arctos contains specimen records and diverse types of data associated
@@ -440,7 +446,7 @@ description can be found at rows 28 and 21, respectively:</p>
 will return a <strong>query</strong>, which bundles our search
 parameters with the returned data from Arctos.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix =</span> <span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">genus =</span> <span class="st">&quot;Canis&quot;</span>, </span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>)</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">api_key=</span>YOUR_API_KEY)</span></code></pre></div>
 <p>This simple search returned the default (core) columns provided by
 Arctos. There is a a lot more information that can be requested from
 Arctos, see below for an example of how to do it.</p>
@@ -471,7 +477,8 @@ parameters to the <code>get_records</code> function in the
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># getting records with additional columns</span></span>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix =</span> <span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">genus =</span> <span class="st">&quot;Canis&quot;</span>, </span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> add_cols)</span></code></pre></div>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> add_cols,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                     <span class="at">api_key=</span>YOUR_API_KEY)</span></code></pre></div>
 <div id="requesting-columns-that-are-tables" class="section level4">
 <h4>Requesting columns that are tables</h4>
 <p>Certain result parameters (columns) in Arctos are entire tables
@@ -487,7 +494,8 @@ dataframes of their own with the function
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># performing the query</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix =</span> <span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">genus =</span> <span class="st">&quot;Canis&quot;</span>, </span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> some_cols)</span></code></pre></div>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> some_cols,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                     <span class="at">api_key=</span>YOUR_API_KEY)</span></code></pre></div>
 <p>See an example of expanding the columns in the section <a href="#expanding-columns">Expanding columns</a></p>
 </div>
 </div>
@@ -502,7 +510,8 @@ given query are downloaded.</p>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; [1] 1694</span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix =</span> <span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">genus =</span> <span class="st">&quot;Canis&quot;</span>, </span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">all_records =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">all_records =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                     <span class="at">api_key=</span>YOUR_API_KEY)</span></code></pre></div>
 </div>
 </div>
 <div id="downloading-and-using-data-from-arctos" class="section level2">
@@ -519,17 +528,31 @@ save data from Arctos.</p>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co"># download records</span></span>
 <span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix =</span> <span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">genus =</span> <span class="st">&quot;Canis&quot;</span>, </span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> my_cols)</span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co"># getting only the dataframe of data</span></span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>msb_wolves <span class="ot">&lt;-</span> <span class="fu">response_data</span>(query)</span></code></pre></div>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>                     <span class="at">species =</span> <span class="st">&quot;lupus&quot;</span>, <span class="at">columns =</span> my_cols,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>                     <span class="at">api_key=</span>YOUR_API_KEY)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># getting only the dataframe of data</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>msb_wolves <span class="ot">&lt;-</span> <span class="fu">response_data</span>(query)</span></code></pre></div>
+<div id="filter-by" class="section level4">
+<h4>Filter by</h4>
+<p>You can filter records by the presence or absence of certain data.
+For example, to find rodents in the MSB:Mamm collection who have
+Orthohantavirus, you can use the <code>filter_by</code> argument to
+<code>get_records</code>. <code>filter_by</code> takes a list of record
+attributes and attribute values. In this example, the record attribute
+is <code>&quot;detected&quot;</code>, and the attribute value is
+<code>&quot;Orthohantavirus&quot;</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>orthohantavirus_MSB <span class="ot">&lt;-</span> <span class="fu">get_records</span>(<span class="at">guid_prefix=</span><span class="st">&quot;MSB:Mamm&quot;</span>, <span class="at">taxon_name=</span>Rodentia,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                                   <span class="at">filter_by=</span><span class="fu">list</span>(<span class="st">&quot;detected&quot;</span><span class="ot">=</span><span class="st">&quot;Orthohantavirus&quot;</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                                   <span class="at">api_key=</span>YOUR_API_KEY)</span></code></pre></div>
+</div>
 <div id="expanding-columns" class="section level4">
 <h4>Expanding columns</h4>
 <p>The column <code>partdetail</code> contains nested dataframes
 associated to each record. To explore these data fully, we can process
 the information and view it as a table.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># process the information in partdetail into sub-dataframes</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">expand_column</span>(query, <span class="st">&quot;partdetail&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># process the information in partdetail into sub-dataframes</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">expand_column</span>(query, <span class="st">&quot;partdetail&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="saving-data" class="section level3">
@@ -538,19 +561,19 @@ the information and view it as a table.</p>
 Arctos. See below for examples of how to do it.</p>
 <div id="saving-as-a-flat-csv-file" class="section level4">
 <h4>Saving as a flat CSV file</h4>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves.csv&quot;</span>)</span></code></pre></div>
 </div>
 <div id="saving-an-expanded-csv" class="section level4">
 <h4>Saving an expanded CSV</h4>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves.csv&quot;</span>, <span class="at">expanded =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves.csv&quot;</span>, <span class="at">expanded =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="saving-as-an-rds" class="section level4">
 <h4>Saving as an RDS</h4>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">save_response_rds</span>(query, <span class="st">&quot;msb_wolves.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">save_response_rds</span>(query, <span class="st">&quot;msb_wolves.rds&quot;</span>)</span></code></pre></div>
 </div>
 <div id="saving-query-metadata" class="section level4">
 <h4>Saving query metadata</h4>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves2.csv&quot;</span>, <span class="at">with_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">save_response_csv</span>(query, <span class="st">&quot;msb_wolves2.csv&quot;</span>, <span class="at">with_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 </div>
 </div>

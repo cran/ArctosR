@@ -24,7 +24,9 @@
 #' @examples
 #' library(ArctosR)
 #'
-#' q <- get_query_parameters()
+#' if (interactive()) {
+#'   q <- get_query_parameters()
+#' }
 #'
 #' @returns
 #' Data frame listing valid query parameters and associated description and
@@ -38,6 +40,7 @@ get_query_parameters <- function() {
   q$info_request()$
     build_request()
   response <- q$perform()
+
   return(response$content$QUERY_PARAMS)
 }
 
@@ -53,7 +56,9 @@ get_query_parameters <- function() {
 #' @examples
 #' library(ArctosR)
 #'
-#' r <- get_result_parameters()
+#' if (interactive()) {
+#'   r <- get_result_parameters()
+#' }
 #'
 #' @returns
 #' Data frame listing valid result columns and associated
@@ -68,6 +73,7 @@ get_result_parameters <- function() {
   q$info_request()$
     build_request()
   response <- q$perform()
+
   return(response$content$RESULTS_PARAMS)
 }
 
@@ -85,9 +91,11 @@ get_result_parameters <- function() {
 #' @examples
 #' library(ArctosR)
 #'
-#' count <- get_record_count(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm"
-#' )
+#' if (interactive()) {
+#'   count <- get_record_count(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm"
+#'   )
+#' }
 #'
 #' @param ... Query parameters and their values to pass to Arctos to search.
 #' For example, `scientific_name = "Canis lupus"``
@@ -98,11 +106,15 @@ get_result_parameters <- function() {
 #'
 #' @export
 get_record_count <- function(..., api_key = NULL) {
-  q <- Query$new()
-  q$catalog_request()$
+  query <- Query$new()
+  query$catalog_request()$
     set_query(...)$
     set_limit(1)
-  response <- q$perform(api_key)
+  response <- query$perform(api_key)
+
+  if (!check_for_status(query)) {
+    stop(get_error_response(query))
+  }
 
   return(response$content$recordsTotal)
 }
@@ -124,11 +136,20 @@ get_record_count <- function(..., api_key = NULL) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
+#' }
+#'
+#' if (interactive()) {
+#'   # Request to download data about rodents examined for Orthohantavirus
+#'   orthohantavirus_MSB <- get_records(guid_prefix="MSB:Mamm", taxon_name=Rodentia,
+#'                                      filter_by=list("detected"="Orthohantavirus")
+#'   )
+#' }
 #'
 #' @param ... Query parameters and their values to pass to Arctos to search.
 #' For example, `scientific_name = "Canis lupus"`
@@ -175,6 +196,10 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
   builder$set_limit(limit)
   query$perform(api_key)
 
+  if (!check_for_status(query)) {
+    stop(get_error_response(query))
+  }
+
   if (all_records) {
     repeat {
       query$from_response_request()$
@@ -183,10 +208,46 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
       if (is.null(query$perform())) {
         break
       }
+
+      if (!check_for_status(query)) {
+        stop(get_error_response(query))
+      }
     }
   }
 
   return(query)
+}
+
+
+
+#' @title Get the relationships (e.g. "host of") a cataloged item has
+#'
+#' @description A cataloged item in Arctos can be related to any other number of
+#' items by relationships defined in the code table `ctid_references`. This
+#' function will return all items related by any such relationship in the table
+#' in a data frame.
+#'
+#' @usage get_relationships(guid)
+#'
+#' @examples
+#' library(ArctosR)
+#'
+#' if (interactive()) {
+#'   r <- get_relationships("MSB:Mamm:140026")
+#' }
+#'
+#' @param guid The Arctos GUID of the item to query relationships over
+#'
+#' @returns a data frame of all related items. This contains URLs
+#'
+#' @export
+get_relationships <- function(guid) {
+  query <- Query$new()
+  builder <- query$catalog_request()
+  builder$set_query(guid=guid)
+  builder$set_columns("relatedcatalogeditems")
+  result <- query$perform()
+  return(response_data(query))
 }
 
 
@@ -202,13 +263,15 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 #' @examples
 #' library(ArctosR)
 #'
-#' # query with an invalid column name 'paarts'
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "paarts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # query with an invalid column name 'paarts'
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "paarts", "partdetail")
+#'   )
 #'
-#' check_for_status(query)
+#'   check_for_status(query)
+#' }
 #'
 #' @param query A query object to check the return status of
 #'
@@ -217,7 +280,13 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 #'
 #' @export
 check_for_status <- function(query) {
-  return(query$last_response$was_success())
+  r <- query$last_response
+
+  if (is.null(r)) {
+    stop("No response")
+  }
+
+  return(r$was_success())
 }
 
 
@@ -235,13 +304,15 @@ check_for_status <- function(query) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # query with an invalid column name 'paarts'
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "paarts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # query with an invalid column name 'paarts'
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "paarts", "partdetail")
+#'   )
 #'
-#' get_error_response(query)
+#'   get_error_response(query)
+#' }
 #'
 #' @param query A query object to return the error string of
 #'
@@ -272,12 +343,14 @@ get_error_response <- function(query) {
 #' @examples
 #' library(ArctosR)
 #'
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' get_last_response_url(query)
+#'   get_last_response_url(query)
+#' }
 #'
 #' @param query A query object to return the URL for
 #'
@@ -302,15 +375,17 @@ get_last_response_url <- function(query) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' # The partdetail column is a JSON list of parts and their attributes
-#' # This will convert the column to dataframes:
-#' expand_column(query, "partdetail")
+#'   # The partdetail column is a JSON list of parts and their attributes
+#'   # This will convert the column to dataframes:
+#'   expand_column(query, "partdetail")
+#' }
 #'
 #' @param query The query object with a JSON formatted column to be expanded.
 #' @param column_name (character) The name of the column to be expanded.
@@ -334,14 +409,16 @@ expand_column <- function(query, column_name) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' # Grab the dataframe of records from the query
-#' df <- response_data(query)
+#'   # Grab the dataframe of records from the query
+#'   df <- response_data(query)
+#' }
 #'
 #' @param query The query object to extract the data frame from.
 #'
@@ -366,17 +443,20 @@ response_data <- function(query) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' # Save the data in a .RDS file
-#' save_response_rds(query, "wolves.RDS")
+#'   # Save the data in a .RDS file
+#'   save_response_rds(query, "wolves.RDS")
 #'
-#' \dontshow{
-#' unlink("wolves.RDS")
+#'
+#'   \dontshow{
+#'   unlink("wolves.RDS")
+#'   }
 #' }
 #'
 #' @param query The query object to be saved.
@@ -401,20 +481,22 @@ save_response_rds <- function(query, filename) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' # Save the data in a .RDS file
-#' save_response_rds(query, "wolves.RDS")
+#'   # Save the data in a .RDS file
+#'   save_response_rds(query, "wolves.RDS")
 #'
-#' # Load the data from the .RDS just saved
-#' read_response_rds("wolves.RDS")
+#'   # Load the data from the .RDS just saved
+#'   read_response_rds("wolves.RDS")
 #'
-#' \dontshow{
-#' unlink("wolves.RDS")
+#'   \dontshow{
+#'   unlink("wolves.RDS")
+#'   }
 #' }
 #'
 #' @param filename (character) The name of the file to load in.
@@ -440,18 +522,20 @@ read_response_rds <- function(filename) {
 #' @examples
 #' library(ArctosR)
 #'
-#' # Request to download all available data
-#' query <- get_records(
-#'   scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
-#'   columns = list("guid", "parts", "partdetail")
-#' )
+#' if (interactive()) {
+#'   # Request to download all available data
+#'   query <- get_records(
+#'     scientific_name = "Canis lupus", guid_prefix = "MSB:Mamm",
+#'     columns = list("guid", "parts", "partdetail")
+#'   )
 #'
-#' # Save the response in a flat CSV with an additional metadata file in JSON
-#' save_response_csv(query, "msb-wolves.csv", with_metadata = TRUE)
+#'   # Save the response in a flat CSV with an additional metadata file in JSON
+#'   save_response_csv(query, "msb-wolves.csv", with_metadata = TRUE)
 #'
-#' \dontshow{
-#' unlink("msb-wolves.csv")
-#' unlink("msb-wolves.csv.json")
+#'   \dontshow{
+#'   unlink("msb-wolves.csv")
+#'   unlink("msb-wolves.csv.json")
+#'   }
 #' }
 #'
 #' @param query The query object to be saved

@@ -1,14 +1,14 @@
 Package: ArctosR
 Title: An Interface to the 'Arctos' Database
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
-    person("Harlan", "Williams", email = "harlanrhwilliams@gmail.com", role = c("aut", "cre")),
+    person("Harlan R.", "Williams", email = "harlanrhwilliams@gmail.com", role = c("aut", "cre")),
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = "aut"),
     person("Jocelyn P.", "Colella", email = "colella@ku.edu", role = "aut"),
     person("Michelle S.", "Koo", email = "mkoo@berkeley.edu", role = "aut"),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"))
-Maintainer: Harlan Williams <harlanrhwilliams@gmail.com>
-Date: 2025-6-30
+Maintainer: Harlan R. Williams <harlanrhwilliams@gmail.com>
+Date: 2025-9-15
 Description: Performs requests to the 'Arctos' API to download data. Provides a
     set of builder classes for performing complex requests, as well as a set of
     simple functions for automating many common requests and workflows. More
@@ -20,17 +20,17 @@ BugReports: https://github.com/hrhwilliams/arctosr/issues
 Depends: R (>= 4.1.0)
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports: R6 (>= 2.5.1), curl (>= 5.0.0), jsonlite (>= 1.8.0)
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-07-15 01:07:28 UTC; harla
-Author: Harlan Williams [aut, cre],
+Packaged: 2025-09-15 13:32:55 UTC; harla
+Author: Harlan R. Williams [aut, cre],
   Marlon E. Cobos [aut],
   Jocelyn P. Colella [aut],
   Michelle S. Koo [aut],
   Vijay Barve [aut]
 Repository: CRAN
-Date/Publication: 2025-07-15 11:10:06 UTC
+Date/Publication: 2025-09-15 19:00:17 UTC

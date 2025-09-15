@@ -45,7 +45,7 @@ library(ArctosR)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                       species = "lupus")
+#                       species = "lupus", api_key=YOUR_API_KEY)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  result_params <- get_result_parameters()
@@ -69,7 +69,8 @@ library(ArctosR)
 #  
 #  # getting records with additional columns
 #  query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                       species = "lupus", columns = add_cols)
+#                       species = "lupus", columns = add_cols,
+#                       api_key=YOUR_API_KEY)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  # defining the columns to be obtained
@@ -77,14 +78,16 @@ library(ArctosR)
 #  
 #  # performing the query
 #  query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                       species = "lupus", columns = some_cols)
+#                       species = "lupus", columns = some_cols,
+#                       api_key=YOUR_API_KEY)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  get_record_count(guid_prefix = "MSB:Mamm", genus = "Canis", species = "lupus")
 #  #> [1] 1694
 #  
 #  query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                       species = "lupus", all_records = TRUE)
+#                       species = "lupus", all_records = TRUE,
+#                       api_key=YOUR_API_KEY)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  # a list of columns to download with the query
@@ -94,10 +97,16 @@ library(ArctosR)
 #  
 #  # download records
 #  query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                       species = "lupus", columns = my_cols)
+#                       species = "lupus", columns = my_cols,
+#                       api_key=YOUR_API_KEY)
 #  
 #  # getting only the dataframe of data
 #  msb_wolves <- response_data(query)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  orthohantavirus_MSB <- get_records(guid_prefix="MSB:Mamm", taxon_name=Rodentia,
+#                                     filter_by=list("detected"="Orthohantavirus"),
+#                                     api_key=YOUR_API_KEY)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  # process the information in partdetail into sub-dataframes
