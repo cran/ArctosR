@@ -23,30 +23,33 @@
 
 ARCTOS_URL <- "https://arctos.database.museum"
 ARCTOS_API_URL <- "component/api/v2"
-ARCTOSR_AGENT_STRING <- "ArctosR/0.1.3"
 PACKAGE_API_KEY <- NULL # default package API key has been discontinued
 
 WARN_MISSING_API_KEY <- "Your API key for Arctos is not currently registered.\nIf you have an API key from Arctos, please set it with the `set_api_key` function."
 
 new_arctosr_handle <- function() {
   h <- curl::new_handle() |>
-    handle_setheaders("User-Agent" = ARCTOSR_AGENT_STRING)
+    handle_setheaders("User-Agent" = paste0("ArctosR/", utils::packageVersion("ArctosR")))
 }
 
 perform_request <- function(url) {
-  curl_fetch_memory(new_arctosr_handle(), url = url)
+  raw <- curl_fetch_memory(url, handle = new_arctosr_handle())
+  arctos_response(
+    status_code = raw$status_code,
+    type = raw$type,
+    date_header = get_header(rawToChar(raw$headers), "Date: "),
+    body = rawToChar(raw$content)
+  )
 }
 
-response_is_json <- function(raw_response) {
-  return(raw_response$type == "application/json;charset=UTF-8")
-}
-
-parse_response <- function(raw_response) {
-  if (raw_response$type == "application/json;charset=UTF-8") {
-    return(fromJSON(rawToChar(raw_response$content), simplifyDataFrame = TRUE))
-  } else {
-    stop("Expected response in JSON format")
-  }
+arctos_response <- function(status_code, type, date_header, body) {
+  is_json <- !is.null(type) && grepl("application/json", type, fixed = TRUE)
+  list(
+    status_code = status_code,
+    type = type,
+    arctos_timestamp = as.POSIXct(date_header, format = "%a, %d %b %Y %H:%M:%S GMT", tz = "GMT"),
+    content = if (is_json) fromJSON(body, simplifyDataFrame = TRUE) else NULL
+  )
 }
 
 build_url <- function(endpoint, queries = NULL) {
@@ -55,6 +58,21 @@ build_url <- function(endpoint, queries = NULL) {
   } else {
     sprintf("%s/%s/%s?%s", ARCTOS_URL, ARCTOS_API_URL, endpoint, encode_params(queries))
   }
+}
+
+get_api_key <- function(callee_name, api_key) {
+  if (is.null(api_key)) {
+    api_key <- Sys.getenv("ARCTOSR_API_KEY")
+
+    if (api_key == "") {
+      stop(sprintf(
+        "ARCTOSR_API_KEY is not set in your .Renviron.  Either set it with `usethis::edit_r_environ()`, or pass in your API key directly via the `api_key` parameter, e.g., as `%s(..., api_key=\"8acd28be-e559-485c-870e-374fa4a6730e\")`",
+        callee_name
+      ))
+    }
+  }
+
+  return(api_key)
 }
 
 encode_list <- function(params, collapse) {

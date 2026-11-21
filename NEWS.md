@@ -19,3 +19,13 @@
 * Fix get_records subsequent requests not using user's API key
 * Add get_request_url to get the first URL used by a query
 * Update vignette to demonstrate spatial data plotting
+
+# ArctosR 0.1.4
+
+* Add support for setting API key via .Renviron file
+* Add vignette demonstrating using ArctosR for downloading data to show the
+  effects of Bergmann's rule
+* Add vignette demonstrating downloading Arctos data for use in ecological niche
+  modeling
+* Fix saving to CSV failing after expanding a column and then requesting more
+  records

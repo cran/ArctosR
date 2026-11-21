@@ -1,8 +1,8 @@
 ---
-title: "Example usage"
+title: "Parasite search and mapping"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example usage}
+  %\VignetteIndexEntry{Parasite search and mapping}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -25,8 +25,20 @@ To begin, make sure to load the library:
 
 ```{r setup}
 # install.packages("ArctosR")
+# install.packages("ggplot2")
+# install.packages("ggspatial")
+# install.packages("ggtext")
+# install.packages("maps")
+# install.packages("patchwork")
+# install.packages("sf")
 
 library(ArctosR)
+library(ggplot2)
+library(ggspatial)
+library(ggtext)
+library(maps)
+library(patchwork)
+library(sf)
 ```
 
 ## Exploring Arctos options
@@ -41,6 +53,9 @@ query_params <- get_query_parameters()
 View(query_params)
 ```
 
+The query parameters we are interested in using are: `guid_prefix`, `genus`,
+`country`.
+
 Next, we can view a list of all parameters we can ask Arctos to return by
 calling:
 
@@ -52,6 +67,9 @@ result_params <- get_result_parameters()
 # Explore all parameters.
 View(result_params)
 ```
+
+The parameters we are interested in returning are: `guid`, `scientific_name`,
+`dec_long`, `dec_lat`, `verbatim_date`, `parts`, `partdetail`.
 
 Each parameter has a category. If we are only interested in certain categories
 of result parameter, we can filter the data.frame returned by
@@ -102,10 +120,15 @@ microtus <- get_records(country = "Mongolia", genus = "Microtus",
                         api_key=YOUR_API_KEY)
 ```
 
+```{r include=FALSE}
+microtus <- read_response_rds(
+  system.file("extdata", "microtus.RDS", package = "ArctosR"))
+```
+
 In Arctos, some table entries, such as `partdetail` are themselves tables. We
 can expand these tables into data.frames using:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Expand a column that contains complex information in JSON format
 expand_column(query = microtus, column_name = "partdetail")
 ```
@@ -115,7 +138,7 @@ the request which is useful for making further requests based on the data
 returned from the first request. To get the data.frame of the response, use
 `response_data` and pass in the response:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Grab the dataframe of records from the response.
 microtus_df <- response_data(microtus)
 
@@ -128,7 +151,7 @@ microtus_df <- microtus_df[microtus_df$dec_lat != "" & microtus_df$dec_long != "
 Now, we write a custom function to check the `partdetail` entries of each specimen
 for whether or not nematodes were present in the specimen.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Filter the data to keep only Microtus records in which nematodes were found
 ## Whole-word match for 'nematode' or 'nematodes'
 pattern <- "\\bnematodes?\\b"
@@ -162,53 +185,161 @@ nrow(microtus_df_no_nematode)
 ## Plotting spatial data
 
 We can plot the spatial distribution of specimens with and without detected
-nematodes using the `ggplot2` and `maps` packages.
+nematodes using the [ggplot2](https://ggplot2.tidyverse.org/) package.
+First, we can simply create a plot of the distribution of all specimens over
+Mongolia.
 
-```{r eval=FALSE}
-library(maps)
-library(ggplot2)
-```
-
-First, we can simply create a plot of all specimens by latitude and longitude
-overlayed over Mongolia.
-
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Initial plot of Microtus sampled in Mongolia
 
-## adapted from
-## https://www.r-bloggers.com/2012/07/map-biodiversity-records-with-rgbif-maps-and-ggplot2-packages-in-r/
+plot_map <- map_data("world", region=c("Mongolia"))
 
-library(maps)
-library(ggplot2)
+mongolia1 <- ggplot(plot_map, aes(long, lat)) +
+  geom_polygon(
+    aes(group = group), fill = "white", color = "gray20",
+    linewidth = .2) +
+  geom_jitter(
+    data = microtus_df,
+    aes(x = as.numeric(dec_long), y = as.numeric(dec_lat),
+    color = "Microtus", shape = "Microtus"),
+    alpha = .5, size = 1.0
+  ) +
+  scale_color_manual(
+    values = c("Microtus" = "red"),
+    labels = c("*Microtus*")
+  ) +
+  scale_shape_manual(
+    values = c("Microtus" = 16),
+    labels = c("*Microtus*")
+  ) +
+  labs(
+    color = "Genus", shape = "Genus", x = NULL, y = NULL
+  ) +
+  coord_sf(
+    crs = "+proj=lcc +lat_1=44 +lat_2=50 +lat_0=47 +lon_0=103.5 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    xlim = c(87, 120), 
+    ylim = c(40, 52.5),
+    default_crs = sf::st_crs(4326),
+    expand = FALSE
+  ) +
+  annotation_scale(
+    location = "bl",
+    width_hint = 0.4
+  ) +
+  annotation_north_arrow(
+    location = "bl",
+    which_north = "true", 
+    pad_x = unit(0.2, "in"),
+    pad_y = unit(0.3, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  theme_minimal() +
+  theme(
+    panel.background = element_rect(fill = "aliceblue"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    legend.position = "none"
+  )
 
-mongolia <- ggplot2::map_data("world", region="Mongolia")
-
-ggplot(mongolia, aes(long, lat)) +
-  geom_polygon(aes(group = group), fill = "white", color = "gray20",
-               size = .2) +
-  geom_jitter(data = microtus_df,
-              aes(x = as.numeric(dec_long), y = as.numeric(dec_lat)),
-              alpha = .5, size = 2, color = "red")
+ggsave(
+  filename = "figures/mongolia1.png",
+  plot = mongolia1,
+  width = 6.53,
+  height = 6.53,
+  dpi = 150,
+  create.dir = TRUE
+)
 ```
 
-![](figures/mongolia1.png)
+![](figures/mongolia1.png){width=98%}
 
-Now this is what really highlights ArctosR's strengths: we can use the
-additional data that Arctos provides to plot Microtus with and Microtus without
-detected nematodes using the filter we established earlier.
+Now this is what really highlights ArctosR's strengths; we can use the
+additional data that Arctos provides to plot *Microtus* with and *Microtus* 
+without detected nematodes using the filter we established earlier.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
+# install.packages("patchwork")
+library(patchwork)
+
 # Plot of Microtus sampled in Mongolia filtered by nematode detected/not detected
 
-ggplot(mongolia, aes(long, lat)) +
-  geom_polygon(aes(group = group), fill = "white", color = "gray20",
-               size = .2) +
-  geom_jitter(data = microtus_df_no_nematode,
-              aes(x = as.numeric(dec_long), y = as.numeric(dec_lat)),
-              alpha = .5, size = 2, color = "black") +
-  geom_jitter(data = microtus_df_nematode,
-              aes(x = as.numeric(dec_long), y = as.numeric(dec_lat)),
-              alpha = .5, size = 2, color = "red", shape="triangle")
+plot_map <- map_data("world", region=c("Mongolia"))
+
+mongolia2 <- ggplot(plot_map, aes(long, lat)) +
+  geom_polygon(
+    aes(group = group), fill = "white", color = "gray20",
+    linewidth = .2
+  ) +
+  geom_jitter(
+    data = microtus_df_no_nematode,
+    aes(x = as.numeric(dec_long), y = as.numeric(dec_lat),
+    color = "Microtus", shape = "Microtus"),
+    alpha = .5, size = 2.0
+  ) +
+  geom_jitter(
+    data = microtus_df_nematode,
+    aes(x = as.numeric(dec_long), y = as.numeric(dec_lat),
+    color = "Microtus nematodes", shape = "Microtus nematodes"),
+    alpha = .5, size = 2.0
+  ) +
+  scale_color_manual(
+    values = c("Microtus" = "red", "Microtus nematodes" = "black"),
+    labels = c("*Microtus*", "*Microtus* with nematodes")
+  ) +
+  scale_shape_manual(
+    values = c("Microtus" = 16, "Microtus nematodes" = 17),
+    labels = c("*Microtus*", "*Microtus* with nematodes")
+  ) +
+  labs(
+    color = "Genus", shape = "Genus", x = NULL, y = NULL
+  ) +
+  coord_sf(
+    crs = "+proj=lcc +lat_1=44 +lat_2=50 +lat_0=47 +lon_0=103.5 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    xlim = c(87, 120), 
+    ylim = c(40, 52.5),
+    default_crs = sf::st_crs(4326),
+    expand = FALSE
+  ) +
+  annotation_scale(
+    location = "br",
+    width_hint = 0.4
+  ) +
+  annotation_north_arrow(
+    location = "br",
+    which_north = "true", 
+    pad_x = unit(0.2, "in"),
+    pad_y = unit(0.3, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  theme_minimal() +
+  theme(
+    panel.background = element_rect(fill = "aliceblue"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1.25),
+    legend.position = c(0.0025, 0.0025),
+    legend.justification = c(0, 0),
+    legend.background = element_rect(fill = "white"),
+    legend.text = element_markdown(),
+    legend.title = element_blank()
+  )
+
+ggsave(
+  filename = "figures/mongolia2.png",
+  plot = mongolia2,
+  width = 6.5,
+  height = 4,
+  dpi = 150,
+  create.dir = TRUE
+)
 ```
 
-![](figures/mongolia2.png)
+![](figures/mongolia2.png){width=98%}
+
+## Viewing relationships
+
+You can return a data frame of all related records with the `get_relationships`
+function. It takes the GUID of a single record and your API key to perform the
+request. In this case, the record returned is a parasite that this record was
+a host of.
+
+```{r eval=FALSE}
+get_relationships("MSB:Mamm:293449", YOUR_API_KEY)
+```

@@ -41,7 +41,7 @@ get_query_parameters <- function() {
     build_request()
   response <- q$perform()
 
-  return(response$content$QUERY_PARAMS)
+  return(response$content$query_params)
 }
 
 
@@ -74,7 +74,7 @@ get_result_parameters <- function() {
     build_request()
   response <- q$perform()
 
-  return(response$content$RESULTS_PARAMS)
+  return(response$content$results_params)
 }
 
 
@@ -86,7 +86,7 @@ get_result_parameters <- function() {
 #' A list of possible query keys can be obtained from the output of
 #' \code{\link{get_query_parameters}}.
 #'
-#' @usage get_record_count(..., api_key = NULL)
+#' @usage get_record_count(..., api_key)
 #'
 #' @examples
 #' library(ArctosR)
@@ -100,12 +100,13 @@ get_result_parameters <- function() {
 #' @param ... Query parameters and their values to pass to Arctos to search.
 #' For example, `scientific_name = "Canis lupus"``
 #' @param api_key (character) The API key to use for this request.
-#' The default, `NULL`, uses the package's default API key.
 #'
 #' @returns The number of records matching the given query, as an integer.
 #'
 #' @export
 get_record_count <- function(..., api_key = NULL) {
+  api_key <- get_api_key("get_record_count", api_key)
+
   query <- Query$new()
   query$catalog_request()$
     set_query(...)$
@@ -154,7 +155,6 @@ get_record_count <- function(..., api_key = NULL) {
 #' @param ... Query parameters and their values to pass to Arctos to search.
 #' For example, `scientific_name = "Canis lupus"`
 #' @param api_key (character) The API key to use for this request.
-#' The default, `NULL`, uses the package's default API key.
 #' @param columns A list of columns to be returned in the table of records
 #' to be downloaded from Arctos.
 #' @param limit (numeric) The maximum number of records to download at once. Default
@@ -169,8 +169,16 @@ get_record_count <- function(..., api_key = NULL) {
 #' fulfill the user's query, and a data frame of records.
 #'
 #' @export
-get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
-                        filter_by = NULL, all_records = FALSE) {
+get_records <- function(
+    ...,
+    api_key = NULL,
+    columns = NULL,
+    limit = NULL,
+    filter_by = NULL,
+    all_records = FALSE
+) {
+  api_key <- get_api_key("get_records", api_key)
+
   query <- Query$new()
   builder <- query$catalog_request()
 
@@ -227,7 +235,7 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 #' function will return all items related by any such relationship in the table
 #' in a data frame.
 #'
-#' @usage get_relationships(guid)
+#' @usage get_relationships(guid, api_key = NULL)
 #'
 #' @examples
 #' library(ArctosR)
@@ -237,19 +245,21 @@ get_records <- function(..., api_key = NULL, columns = NULL, limit = NULL,
 #' }
 #'
 #' @param guid The Arctos GUID of the item to query relationships over
+#' @param api_key (character) The API key to use for this request.
 #'
 #' @returns a data frame of all related items. This contains URLs
 #'
 #' @export
-get_relationships <- function(guid) {
+get_relationships <- function(guid, api_key = NULL) {
+  api_key <- get_api_key("get_relationships", api_key)
+
   query <- Query$new()
   builder <- query$catalog_request()
   builder$set_query(guid=guid)
   builder$set_columns("relatedcatalogeditems")
-  result <- query$perform()
+  result <- query$perform(api_key)
   return(response_data(query))
 }
-
 
 
 #' @title Get the first URL in a completed query

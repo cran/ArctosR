@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Exploring patterns of Bergmann’s rule</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Exploring patterns of Bergmann’s rule</h1>
+
+
+
+<p>In this example we query Arctos for morphological data for
+<em>Didelphis virginiana</em> (the Virginia opossum) and use
+geographical coordinate data and weights to explore patterns of
+Bergmann’s rule.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install packages if needed</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># install.packages(&quot;ArctosR&quot;)</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># install.packages(&quot;ggplot2&quot;)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(ArctosR)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<div id="querying-arctos-for-relevant-data" class="section level2">
+<h2>Querying Arctos for relevant data</h2>
+<p>First, we query Arctos for <em>Didelphis virginiana</em> records
+using <code>get_records()</code>, requesting only the GUID identifier,
+decimal latitude, longitude, weight, and age columns for each
+specimen.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Download all available records of Didelphis virginiana, and include latitude</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># and longitude data</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>brule_query <span class="ot">&lt;-</span> <span class="fu">get_records</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">scientific_name =</span> <span class="st">&quot;Didelphis virginiana&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">list</span>(<span class="st">&quot;guid&quot;</span>, <span class="st">&quot;dec_lat&quot;</span>, <span class="st">&quot;dec_long&quot;</span>, <span class="st">&quot;weight&quot;</span>, <span class="st">&quot;age&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">api_key =</span> YOUR_API_KEY,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">all_records =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="processing-query-to-obtain-size" class="section level2">
+<h2>Processing query to obtain size</h2>
+<p>Because of the multiple formats and options in which data can be
+uploaded to Arctos, data cleaning steps are needed before we can analyze
+it. The code below helps to filter data to keep only what is relevant
+for analysis and format it as numeric values</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Obtain data frame from response </span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>brule_query_df <span class="ot">&lt;-</span> <span class="fu">response_data</span>(brule_query)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">colnames</span>(brule_query_df)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;rights&quot;   &quot;dec_lat&quot;  &quot;guid&quot;     &quot;dec_long&quot; &quot;weight&quot;   &quot;age&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Filter by age and keep a subset of columns</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>adults <span class="ot">&lt;-</span> brule_query_df<span class="sc">$</span>age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;adult&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>brule_data <span class="ot">&lt;-</span> brule_query_df[adults, <span class="fu">c</span>(<span class="st">&quot;dec_lat&quot;</span>, <span class="st">&quot;dec_long&quot;</span>, <span class="st">&quot;weight&quot;</span>, <span class="st">&quot;age&quot;</span>)]</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Filter to keep records with latitude information</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>brule_data <span class="ot">&lt;-</span> brule_data[brule_data<span class="sc">$</span>dec_lat <span class="sc">!=</span> <span class="st">&quot;&quot;</span>, ]</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co"># Format latitude as numeric</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>brule_data<span class="sc">$</span>dec_lat <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(brule_data<span class="sc">$</span>dec_lat)</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># Filter by weight</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="do">## Remove no data</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">unique</span>(brule_data<span class="sc">$</span>weight)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt;   [1] &quot;&quot;                      &quot;1710 g&quot;                &quot;2 kg&quot;                 </span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt;   [4] &quot;4.1 kg&quot;                &quot;1905 g&quot;                &quot;2.5 kg&quot;               </span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt;   [7] &quot;1868 g&quot;                &quot;3 kg&quot;                  &quot;2150 g&quot;               </span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt;  [10] &quot;1.8 kg&quot;                &quot;1.5 kg&quot;                &quot;1.45 kg&quot;              </span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt;  [13] &quot;2200 g&quot;                &quot;2100 g&quot;                &quot;1900 g&quot;               </span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt;  [16] &quot;2400 g&quot;                &quot;2000 g&quot;                &quot;2600 g&quot;               </span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;  [19] &quot;2300 g&quot;                &quot;1000 g&quot;                &quot;1206 g&quot;               </span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;  [22] &quot;1374 g&quot;                &quot;1067 g&quot;                &quot;1329 g&quot;               </span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;  [25] &quot;1003 g&quot;                &quot;1415 g&quot;                &quot;3.4 g&quot;                </span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;  [28] &quot;610 g&quot;                 &quot;340 g&quot;                 &quot;2.67 kg&quot;              </span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;  [31] &quot;2360 g&quot;                &quot;850 g&quot;                 &quot;2.9 kg&quot;               </span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;  [34] &quot;1.57 kg&quot;               &quot;180 g&quot;                 &quot;1.75 kg&quot;              </span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;  [37] &quot;950 g&quot;                 &quot;1.53 kg&quot;               &quot;2.2999999999999998 kg&quot;</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;  [40] &quot;2.0649999999999999 kg&quot; &quot;81.2 g&quot;                &quot;650 g&quot;                </span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;  [43] &quot;2.0099999999999998 kg&quot; &quot;1.95 kg&quot;               &quot;1.7 kg&quot;               </span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;  [46] &quot;2.65 kg&quot;               &quot;220 g&quot;                 &quot;2.4700000000000002 kg&quot;</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;  [49] &quot;1355 g&quot;                &quot;255 g&quot;                 &quot;93.7 g&quot;               </span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;  [52] &quot;1060 g&quot;                &quot;4500 g&quot;                &quot;3.6 kg&quot;               </span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt;  [55] &quot;2.6 kg&quot;                &quot;1814 g&quot;                &quot;1606 g&quot;               </span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt;  [58] &quot;3010 g&quot;                &quot;2010 g&quot;                &quot;1557 g&quot;               </span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt;  [61] &quot;4430 g&quot;                &quot;1825 g&quot;                &quot;2900 g&quot;               </span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt;  [64] &quot;4000 g&quot;                &quot;2993 g&quot;                &quot;3.18 kg&quot;              </span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt;  [67] &quot;.74 kg&quot;                &quot;3683.2 g&quot;              &quot;14 oz&quot;                </span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt;  [70] &quot;2500 g&quot;                &quot;110 g&quot;                 &quot;2516 g&quot;               </span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt;  [73] &quot;3562 g&quot;                &quot;2908 g&quot;                &quot;440 g&quot;                </span></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt;  [76] &quot;1435 g&quot;                &quot;2781 g&quot;                &quot;2359 g&quot;               </span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt;  [79] &quot;3131 g&quot;                &quot;1800 g&quot;                &quot;1600 g&quot;               </span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt;  [82] &quot;1550 g&quot;                &quot;177 g&quot;                 &quot;2850 g&quot;               </span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co">#&gt;  [85] &quot;8 g&quot;                   &quot;11 g&quot;                  &quot;17 g&quot;                 </span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt;  [88] &quot;13 g&quot;                  &quot;22 g&quot;                  &quot;20 g&quot;                 </span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt;  [91] &quot;23 g&quot;                  &quot;21 g&quot;                  &quot;24 g&quot;                 </span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt;  [94] &quot;16 g&quot;                  &quot;12 g&quot;                  &quot;14 g&quot;                 </span></span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co">#&gt;  [97] &quot;15 g&quot;                  &quot;19 g&quot;                  &quot;18 g&quot;                 </span></span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co">#&gt; [100] &quot;10 g&quot;                  &quot;9 g&quot;                   &quot;33 g&quot;                 </span></span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a><span class="co">#&gt; [103] &quot;34 g&quot;                  &quot;32 g&quot;                  &quot;30 g&quot;                 </span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt; [106] &quot;31 g&quot;                  &quot;6 g&quot;                   &quot;7 g&quot;                  </span></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a><span class="co">#&gt; [109] &quot;4 g&quot;                   &quot;5 g&quot;                   &quot;40 g&quot;                 </span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="co">#&gt; [112] &quot;39 g&quot;                  &quot;41 g&quot;                  &quot;36 g&quot;                 </span></span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt; [115] &quot;43 g&quot;                  &quot;42 g&quot;                  &quot;1300 g&quot;               </span></span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a><span class="co">#&gt; [118] &quot;2.2 kg&quot;                &quot;2.1 kg&quot;                &quot;1200 g&quot;               </span></span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a><span class="co">#&gt; [121] &quot;3200 g&quot;                &quot;120 g&quot;                 &quot;2325 g&quot;               </span></span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a><span class="co">#&gt; [124] &quot;1812 g&quot;                &quot;233 g&quot;                 &quot;2002 g&quot;               </span></span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a><span class="co">#&gt; [127] &quot;2537.2 g&quot;              &quot;3000 g&quot;                &quot;64 oz&quot;                </span></span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a><span class="co">#&gt; [130] &quot;2352 g&quot;                &quot;2370 g&quot;                &quot;1360 g&quot;               </span></span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a><span class="co">#&gt; [133] &quot;1620.1 g&quot;              &quot;0 g&quot;                   &quot;2.35 kg&quot;              </span></span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt; [136] &quot;66 g&quot;                  &quot;131 g&quot;                 &quot;135 g&quot;                </span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co">#&gt; [139] &quot;136.1 g&quot;               &quot;87 g&quot;                  &quot;2700.0 g&quot;             </span></span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="co">#&gt; [142] &quot;157 g&quot;                 &quot;4300 g&quot;                &quot;3680 g&quot;               </span></span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a><span class="co">#&gt; [145] &quot;2530 g&quot;                &quot;3571 g&quot;                &quot;2972 g&quot;               </span></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a><span class="co">#&gt; [148] &quot;4350 g&quot;                &quot;6.76 g&quot;                &quot;3916 g&quot;               </span></span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a><span class="co">#&gt; [151] &quot;92 g&quot;                  &quot;2.37 kg&quot;               &quot;627 g&quot;                </span></span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a><span class="co">#&gt; [154] &quot;2397 g&quot;                &quot;66.1 g&quot;                &quot;58.9 g&quot;               </span></span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a><span class="co">#&gt; [157] &quot;104.4 g&quot;               &quot;116.6 g&quot;               &quot;3377 g&quot;               </span></span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a><span class="co">#&gt; [160] &quot;921 g&quot;                 &quot;64.8 g&quot;                &quot;3419 g&quot;               </span></span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a><span class="co">#&gt; [163] &quot;2070 g&quot;                &quot;957.5 g&quot;               &quot;2223 g&quot;               </span></span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a><span class="co">#&gt; [166] &quot;178.9 g&quot;               &quot;1.61 kg&quot;               &quot;169 g&quot;                </span></span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a><span class="co">#&gt; [169] &quot;3.2 kg&quot;                &quot;1740 g&quot;                &quot;478.0 g&quot;              </span></span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a><span class="co">#&gt; [172] &quot;1383 g&quot;                &quot;1832 g&quot;                &quot;3.295 kg&quot;             </span></span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a><span class="co">#&gt; [175] &quot;1694.2 g&quot;              &quot;2.84 kg&quot;               &quot;2168 g&quot;               </span></span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a><span class="co">#&gt; [178] &quot;2.95 kg&quot;               &quot;26.0 g&quot;                &quot;2.05 kg&quot;              </span></span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a><span class="co">#&gt; [181] &quot;2.045 kg&quot;              &quot;3.98 kg&quot;               &quot;4.2 kg&quot;               </span></span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a><span class="co">#&gt; [184] &quot;3.75 kg&quot;               &quot;3.4 kg&quot;                &quot;1083 g&quot;               </span></span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a><span class="co">#&gt; [187] &quot;3850 g&quot;                &quot;3560 g&quot;                &quot;5125 g&quot;               </span></span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a><span class="co">#&gt; [190] &quot;26.5 kg&quot;               &quot;33 kg&quot;                 &quot;2610.5 g&quot;             </span></span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a><span class="co">#&gt; [193] &quot;2250 g&quot;</span></span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a>brule_data <span class="ot">&lt;-</span> brule_data[brule_data<span class="sc">$</span>weight <span class="sc">!=</span> <span class="st">&quot;&quot;</span>, ]</span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a><span class="do">## Process data to keep it in the same units</span></span>
+<span id="cb3-89"><a href="#cb3-89" tabindex="-1"></a>oweghts <span class="ot">&lt;-</span> brule_data<span class="sc">$</span>weight</span>
+<span id="cb3-90"><a href="#cb3-90" tabindex="-1"></a></span>
+<span id="cb3-91"><a href="#cb3-91" tabindex="-1"></a><span class="do">### Erase units from values</span></span>
+<span id="cb3-92"><a href="#cb3-92" tabindex="-1"></a>brule_data<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot; g$&quot;</span>, <span class="st">&quot;&quot;</span>, brule_data<span class="sc">$</span>weight)</span>
+<span id="cb3-93"><a href="#cb3-93" tabindex="-1"></a>brule_data<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot; kg$&quot;</span>, <span class="st">&quot;&quot;</span>, brule_data<span class="sc">$</span>weight)</span>
+<span id="cb3-94"><a href="#cb3-94" tabindex="-1"></a>brule_data<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot; oz$&quot;</span>, <span class="st">&quot;&quot;</span>, brule_data<span class="sc">$</span>weight)</span>
+<span id="cb3-95"><a href="#cb3-95" tabindex="-1"></a></span>
+<span id="cb3-96"><a href="#cb3-96" tabindex="-1"></a><span class="do">### Make it numeric</span></span>
+<span id="cb3-97"><a href="#cb3-97" tabindex="-1"></a>brule_data<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(brule_data<span class="sc">$</span>weight)</span>
+<span id="cb3-98"><a href="#cb3-98" tabindex="-1"></a></span>
+<span id="cb3-99"><a href="#cb3-99" tabindex="-1"></a><span class="do">### Transform units</span></span>
+<span id="cb3-100"><a href="#cb3-100" tabindex="-1"></a>woz <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot; oz$&quot;</span>, oweghts)</span>
+<span id="cb3-101"><a href="#cb3-101" tabindex="-1"></a>wkg <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot; kg$&quot;</span>, oweghts)</span>
+<span id="cb3-102"><a href="#cb3-102" tabindex="-1"></a></span>
+<span id="cb3-103"><a href="#cb3-103" tabindex="-1"></a>brule_data<span class="sc">$</span>weight[woz] <span class="ot">&lt;-</span> brule_data<span class="sc">$</span>weight[woz] <span class="sc">*</span> <span class="fl">28.35</span></span>
+<span id="cb3-104"><a href="#cb3-104" tabindex="-1"></a>brule_data<span class="sc">$</span>weight[wkg] <span class="ot">&lt;-</span> brule_data<span class="sc">$</span>weight[wkg] <span class="sc">*</span> <span class="dv">1000</span></span>
+<span id="cb3-105"><a href="#cb3-105" tabindex="-1"></a></span>
+<span id="cb3-106"><a href="#cb3-106" tabindex="-1"></a><span class="do">### Filter by weights considered to represent adult sizes</span></span>
+<span id="cb3-107"><a href="#cb3-107" tabindex="-1"></a>brule_data <span class="ot">&lt;-</span> brule_data[brule_data<span class="sc">$</span>weight <span class="sc">&gt;</span> <span class="dv">300</span> <span class="sc">&amp;</span></span>
+<span id="cb3-108"><a href="#cb3-108" tabindex="-1"></a>                          brule_data<span class="sc">$</span>weight <span class="sc">&lt;</span> <span class="dv">6500</span>, ]</span></code></pre></div>
+</div>
+<div id="exploring-if-bergmanns-rule-applies-to-this-example" class="section level2">
+<h2>Exploring if Bergmann’s rule applies to this example</h2>
+<p>The following lines of code help to produce a plot to explore the
+relationship between latitude and weight. Under the Bergmann’s rule, we
+expect to see a positive relationship (i.e., weight increases with
+latitude).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create the plot with a linear regression line</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">ggplot</span>(brule_data, <span class="fu">aes</span>(<span class="at">x =</span> dec_lat, <span class="at">y =</span> weight)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">formula =</span> <span class="st">&quot;y ~ x&quot;</span>, <span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Relationship between latitude and weight for the Virginia opossum&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Decimal Latitude&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Weight&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() </span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

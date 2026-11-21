@@ -8,10 +8,15 @@ knitr::opts_chunk$set(
 library(ArctosR)
 
 ## ----eval = FALSE-------------------------------------------------------------
+# # You will have to request an API key from Arctos to get records, and pass it
+# # to the `get_record_count` and `get_records` functions through the `api_key`
+# # parameter.
+# YOUR_API_KEY <- "11111111-2222-3333-4444444444444444"
+# 
 # # run the function and store results in an object
 # query_params <- get_query_parameters()
 # 
-# # checking the dataframe obtained (showing only 6 rows and 3 columns)
+# # checking the data frame obtained (showing only 6 rows and 3 columns)
 # query_params[1:6,1:3]
 # #>             display                obj_name category
 # #> 1     Verbatim Date           verbatim_date    event
@@ -22,7 +27,7 @@ library(ArctosR)
 # #> 6           Habitat                 habitat    event
 
 ## ----eval = FALSE-------------------------------------------------------------
-# # checking row 37 in the dataframe
+# # checking row 37 in the data frame
 # query_params[37,1:5]
 # #>       display    obj_name   category subcategory
 # #> 37 Collection guid_prefix identifier       basic
@@ -44,8 +49,11 @@ library(ArctosR)
 # #> 23 Species (binomial) as provided in collection's preferred Source(s).
 
 ## ----eval = FALSE-------------------------------------------------------------
-# query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                      species = "lupus", api_key=YOUR_API_KEY)
+# query <- get_records(
+#   guid_prefix = "MSB:Mamm",
+#   scientific_name = "Canis lupus",
+#   api_key=YOUR_API_KEY
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
 # result_params <- get_result_parameters()
@@ -63,31 +71,56 @@ library(ArctosR)
 
 ## ----eval = FALSE-------------------------------------------------------------
 # # making a list of additional columns to get (see get_query_parameters())
-# add_cols <- list("guid", "scientific_name", "relatedcatalogeditems", "collectors",
-#                  "state_prov", "spec_locality", "dec_lat", "dec_long",
-#                  "verbatim_date", "examined_for", "detected", "not_detected")
+# add_cols <- list(
+#   "guid",
+#   "scientific_name",
+#   "relatedcatalogeditems",
+#   "collectors",
+#   "state_prov",
+#   "spec_locality",
+#   "dec_lat",
+#   "dec_long",
+#   "verbatim_date",
+#   "examined_for",
+#   "detected",
+#   "not_detected"
+# )
 # 
 # # getting records with additional columns
-# query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                      species = "lupus", columns = add_cols,
-#                      api_key=YOUR_API_KEY)
+# query <- get_records(
+#   guid_prefix = "MSB:Mamm",
+#   scientific_name = "Canis lupus",
+#   columns = add_cols,
+#   api_key=YOUR_API_KEY
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
 # # defining the columns to be obtained
 # some_cols <- list("guid", "parts", "partdetail")
 # 
 # # performing the query
-# query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                      species = "lupus", columns = some_cols,
-#                      api_key=YOUR_API_KEY)
+# query <- get_records(
+#   guid_prefix = "MSB:Mamm",
+#   genus = "Canis",
+#   species = "lupus",
+#   columns = some_cols,
+#   api_key=YOUR_API_KEY
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
-# get_record_count(guid_prefix = "MSB:Mamm", genus = "Canis", species = "lupus")
+# get_record_count(
+#   guid_prefix = "MSB:Mamm",
+#   scientific_name = "Canis lupus",
+#   api_key=YOUR_API_KEY
+# )
 # #> [1] 1694
 # 
-# query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                      species = "lupus", all_records = TRUE,
-#                      api_key=YOUR_API_KEY)
+# query <- get_records(
+#   guid_prefix = "MSB:Mamm",
+#   scientific_name = "Canis lupus",
+#   all_records = TRUE,
+#   api_key=YOUR_API_KEY
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
 # # a list of columns to download with the query
@@ -96,20 +129,26 @@ library(ArctosR)
 #                 "partdetail")
 # 
 # # download records
-# query <- get_records(guid_prefix = "MSB:Mamm", genus = "Canis",
-#                      species = "lupus", columns = my_cols,
-#                      api_key=YOUR_API_KEY)
+# query <- get_records(
+#   guid_prefix = "MSB:Mamm",
+#   scientific_name = "Canis lupus",
+#   columns = my_cols,
+#   api_key=YOUR_API_KEY
+# )
 # 
-# # getting only the dataframe of data
+# # getting only the data frame of data
 # msb_wolves <- response_data(query)
 
 ## ----eval = FALSE-------------------------------------------------------------
-# orthohantavirus_MSB <- get_records(guid_prefix="MSB:Mamm", taxon_name=Rodentia,
-#                                    filter_by=list("detected"="Orthohantavirus"),
-#                                    api_key=YOUR_API_KEY)
+# orthohantavirus_MSB <- get_records(
+#   guid_prefix="MSB:Mamm",
+#   taxon_name="Rodentia",
+#   filter_by=list("detected"="Orthohantavirus"),
+#   api_key=YOUR_API_KEY
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
-# # process the information in partdetail into sub-dataframes
+# # process the information in partdetail into sub-data frames
 # expand_column(query, "partdetail")
 
 ## ----eval = FALSE-------------------------------------------------------------

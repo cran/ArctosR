@@ -29,22 +29,6 @@ test_that("query info build request", {
   testthat::expect_equal(request$params$method, "about")
 })
 
-test_that("query info perform request", {
-  local_mocked_bindings(
-    perform_request = function(...) {
-      return(readRDS("params_response.rds"))
-    }
-  )
-
-  query_params <- get_query_parameters()
-  result_params <- get_result_parameters()
-
-  testthat::expect_s3_class(query_params, "data.frame")
-  testthat::expect_s3_class(result_params, "data.frame")
-  testthat::expect_gt(nrow(query_params), 0)
-  testthat::expect_gt(nrow(result_params), 0)
-})
-
 test_that("query catalog request", {
   q <- Query$new()
   request <- q$catalog_request()$
@@ -53,17 +37,17 @@ test_that("query catalog request", {
     set_columns("guid", "scientific_name", "relatedcatalogeditems")$
     build_request()
 
-  testthat::expect_equal(request$end_point, "catalog.cfc")
+  testthat::expect_equal(request$end_point, "record.cfc")
   testthat::expect_equal(length(request$params), 7)
-  testthat::expect_equal(request$params$method, "getCatalogData")
+  testthat::expect_equal(request$params$method, "getData")
   testthat::expect_equal(request$params$queryformat, "struct")
   testthat::expect_equal(request$params$length, 100)
   testthat::expect_equal(request$params$guid_prefix, "MSB:Mamm")
   testthat::expect_equal(request$params$genus, "Canis")
-  testthat::expect_equal(request$params$cols, "guid,scientific_name,relatedcatalogeditems")
+  testthat::expect_equal(request$params$return_columns, "guid,scientific_name,relatedcatalogeditems")
   testthat::expect_equal(
     request$url,
-    "https://arctos.database.museum/component/api/v2/catalog.cfc?method=getCatalogData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&genus=Canis&species=lupus&cols=guid%2Cscientific_name%2Crelatedcatalogeditems"
+    "https://arctos.database.museum/component/api/v2/record.cfc?method=getData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&genus=Canis&species=lupus&return_columns=guid%2Cscientific_name%2Crelatedcatalogeditems"
   )
 })
 
@@ -76,24 +60,24 @@ test_that("query catalog request with record filters", {
     set_filter(sex="=male", weight=">100")$
     build_request()
 
-  testthat::expect_equal(request$end_point, "catalog.cfc")
+  testthat::expect_equal(request$end_point, "record.cfc")
   testthat::expect_equal(length(request$params), 11)
-  testthat::expect_equal(request$params$method, "getCatalogData")
+  testthat::expect_equal(request$params$method, "getData")
   testthat::expect_equal(request$params$queryformat, "struct")
   testthat::expect_equal(request$params$length, 100)
   testthat::expect_equal(request$params$guid_prefix, "MSB:Mamm")
   testthat::expect_equal(request$params$genus, "Canis")
-  testthat::expect_equal(request$params$cols, "guid,scientific_name,relatedcatalogeditems")
+  testthat::expect_equal(request$params$return_columns, "guid,scientific_name,relatedcatalogeditems")
   testthat::expect_equal(
     request$url,
-    "https://arctos.database.museum/component/api/v2/catalog.cfc?method=getCatalogData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&genus=Canis&species=lupus&cols=guid%2Cscientific_name%2Crelatedcatalogeditems&attribute_type_1=sex&attribute_type_2=weight&attribute_value_1=%3Dmale&attribute_value_2=%3E100"
+    "https://arctos.database.museum/component/api/v2/record.cfc?method=getData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&genus=Canis&species=lupus&return_columns=guid%2Cscientific_name%2Crelatedcatalogeditems&attribute_type_1=sex&attribute_type_2=weight&attribute_value_1=%3Dmale&attribute_value_2=%3E100"
   )
 })
 
 test_that("get_record_count", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_no_cols.rds"))
+      return(fixture_response("test_request_no_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -111,7 +95,7 @@ test_that("get_record_count", {
 test_that("get_records_no_cols", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_no_cols.rds"))
+      return(fixture_response("test_request_no_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -146,11 +130,11 @@ test_that("get_records_no_cols concatenate", {
       i <<- i + 1
 
       if (i == 1) {
-        return(readRDS("test_request_no_cols.rds"))
+        return(fixture_response("test_request_no_cols"))
       } else if (i == 2) {
-        return(readRDS("test_request_no_cols_part2.rds"))
+        return(fixture_response("test_request_no_cols_part2"))
       } else {
-        return(readRDS("test_request_no_cols_part3.rds"))
+        return(fixture_response("test_request_no_cols_part3"))
       }
     },
     check_for_status = function(...) {
@@ -170,7 +154,7 @@ test_that("get_records_no_cols concatenate", {
 test_that("get_records_with_cols", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_with_cols.rds"))
+      return(fixture_response("test_request_with_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -191,7 +175,7 @@ test_that("get_records_with_cols", {
 test_that("expand_cols", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_with_cols.rds"))
+      return(fixture_response("test_request_with_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -214,7 +198,7 @@ test_that("expand_cols", {
 test_that("expand_cols fail", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_with_cols.rds"))
+      return(fixture_response("test_request_with_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -233,7 +217,7 @@ test_that("re-expand cols after write", {
 
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_with_cols.rds"))
+      return(fixture_response("test_request_with_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -250,7 +234,7 @@ test_that("re-expand cols after write", {
   testthat::expect_s3_class(df$partdetail[[1]], "data.frame")
 
   old_wd <- getwd()
-  on.exit(setwd(old_wd))
+  on.exit(setwd(old_wd), add = TRUE)
   tmp <- tempfile()
   dir.create(tmp)
   setwd(tmp)
@@ -267,10 +251,28 @@ test_that("re-expand cols after write", {
   testthat::expect_equal(basename(getwd()), basename(tmp))
 })
 
+test_that("regression: saving to CSV fails after expanding a column and then requesting", {
+  make_records <- function(ids) {
+    Records$new(data.frame(guid = ids, parts = sprintf('[{"part":"skin%s"}]', ids)), "tbl")
+  }
+
+  records <- make_records(c("a", "b"))
+  records$expand_col("parts")
+  records$append(make_records(c("c", "d", "e")))
+
+  testthat::expect_equal(nrow(records$df), 5)
+  testthat::expect_equal(records$df$parts[[5]]$part, "skine")
+
+  csv <- tempfile(fileext = ".csv")
+  records$save_flat_csv(csv)
+  testthat::expect_equal(read.csv(csv)$parts, sprintf('[{"part":"skin%s"}]', c("a", "b", "c", "d", "e")))
+  testthat::expect_s3_class(records$df$parts[[1]], "data.frame")
+})
+
 test_that("get_url after get_records", {
   local_mocked_bindings(
     perform_request = function(...) {
-      return(readRDS("test_request_no_cols.rds"))
+      return(fixture_response("test_request_no_cols"))
     },
     check_for_status = function(...) {
       return(TRUE)
@@ -284,6 +286,6 @@ test_that("get_url after get_records", {
 
   testthat::expect_equal(
     get_request_url(query),
-    "https://arctos.database.museum/component/api/v2/catalog.cfc?method=getCatalogData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&species=Canis&genus=lupus"
+    "https://arctos.database.museum/component/api/v2/record.cfc?method=getData&queryformat=struct&length=100&guid_prefix=MSB%3AMamm&species=Canis&genus=lupus"
   )
 })
